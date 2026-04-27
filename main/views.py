@@ -29,12 +29,12 @@ def stripe_webhook(request):
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
     
-    email = session['customer_email']['email']
-    amount = session['amount_total'] / 100
+    email = session.get('customer_email', {}).get('email')
+    amount = session.get('amount_total', 0) / 100
 
     Payment.objects.create(
         email=email,
-        amoount=amount,
+        amount=amount,
         plan="Consultation"
         
     )
@@ -55,8 +55,8 @@ def create_checkout(request, price):
             'quantity': 1,
         }],
         mode='payment',
-        success_url='https://lawsite.onrender.com/success/',
-        cancel_url='https://lawsite.onrender.com/cancel/',
+        success_url='http://127.0.0.1:8000/success/',
+        cancel_url='http://127.0.0.1:8000/cancel/',
     )
     return redirect(session.url)
 
